@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const ip = '61.220.105.113:8885';
-const url = 'http://$ip/ioms5data/analyze/kanban/machinestatus';
+import 'package:emudc_app/Homepage.dart';
+
+String url = 'http://$serverIP/iomfake/settings';
 
 class NetworkHelper {
   NetworkHelper(this.url);
@@ -11,14 +12,12 @@ class NetworkHelper {
   final String url;
 
   Future getData() async {
-    http.Response response = await http.get(url, headers: {
-      "workShopNumber": "1",
-    });
+    http.Response response = await http.get(url);
 
     if (response.statusCode == 200) {
       String data = response.body;
       // print(jsonDecode(data));
-      return jsonDecode(data)["data"];
+      return jsonDecode(data);
     } else {
       print(response.statusCode);
     }
@@ -31,17 +30,17 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  Future<dynamic> fetchKanban() async {
-    NetworkHelper networkHelper = NetworkHelper(url);
+  Future<dynamic> getSettings() async {
+    var networkHelper = NetworkHelper(url);
     var data = await networkHelper.getData();
     return data;
   }
 
-  var machines;
+  var settings;
   @override
   void initState() {
     super.initState();
-    machines = fetchKanban();
+    settings = getSettings();
   }
 
   @override
@@ -63,23 +62,20 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: Center(
         child: FutureBuilder(
-          future: machines,
+          future: settings,
           builder: (context, snapshot) {
             // List temp = [];
-            // List<Widget> machineList = [];
+            List<Widget> settingList = [];
 
             if (snapshot.hasData) {
-              // temp = snapshot.data;
-              // for (var i = 0; i < temp.length; i++) {
-              //   machineList.add(
-              //     _tile(temp[i]['machineNumber'], temp[i]['machineModel'],
-              //         Icons.devices),
-              //   );
-              // }
+              var temp = snapshot.data;
+              for (var i = 0; i < temp.length; i++) {
+                settingList.add(
+                  _tile(temp[i]['key'], temp[i]['value'], Icons.accessible),
+                );
+              }
               return ListView(
-                children: <Widget>[
-                  _tile('IP', 'fakedata', Icons.network_wifi),
-                ],
+                children: settingList,
               );
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");

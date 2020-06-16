@@ -1,10 +1,12 @@
-import 'package:emudc_app/SingleMachine.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const ip = '61.220.105.113:8885';
-const url = 'http://$ip/ioms5data/analyze/kanban/machinestatus';
+import 'package:emudc_app/Homepage.dart';
+import 'package:emudc_app/SingleMachine.dart';
+
+String url =
+    'http://61.220.105.114:8885/ioms5data/analyze/kanban/machinestatus';
 
 class NetworkHelper {
   NetworkHelper(this.url);
@@ -12,9 +14,7 @@ class NetworkHelper {
   final String url;
 
   Future getData() async {
-    http.Response response = await http.get(url, headers: {
-      "workShopNumber": "1",
-    });
+    http.Response response = await http.get(url);
 
     if (response.statusCode == 200) {
       String data = response.body;
@@ -33,7 +33,7 @@ class GodMode extends StatefulWidget {
 
 class _GodModeState extends State<GodMode> {
   Future<dynamic> fetchKanban() async {
-    NetworkHelper networkHelper = NetworkHelper(url);
+    var networkHelper = NetworkHelper(url);
     var data = await networkHelper.getData();
     return data;
   }

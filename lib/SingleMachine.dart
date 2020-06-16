@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:emudc_app/Homepage.dart';
 
-const ip = '61.220.105.113:9001';
-const url = 'http://$ip/iomfake';
+String url = 'http://$serverIP/iomfake';
 
 class NetworkHelper {
   NetworkHelper(this.url, this.machineNumber);
@@ -62,7 +62,7 @@ class _SingleMachineState extends State<SingleMachine> {
     machines = fetchKanban();
   }
 
-  List temp = [];
+  var temp;
   List<Widget> machineList = [];
   @override
   Widget build(BuildContext context) {
@@ -77,17 +77,13 @@ class _SingleMachineState extends State<SingleMachine> {
             if (snapshot.hasData) {
               temp = snapshot.data;
               var action;
-              if (temp[0]['status'] == 1 || temp[0]['status'] == 2) {
+              if (temp['status'] == 1 || temp['status'] == 2) {
                 action = 'Running';
               } else {
                 action = 'Abnormal';
               }
-              machineList.add(_tile(
-                  'Cycle Time',
-                  temp[0]['cycleTime'].toString(),
-                  Icons.account_balance_wallet,
-                  context,
-                  myController1));
+              machineList.add(_tile('Cycle Time', temp['cycleTime'].toString(),
+                  Icons.account_balance_wallet, context, myController1));
               machineList.add(_tile('Mode', action,
                   Icons.account_balance_wallet, context, myController2));
               machineList.add(_tile('Duration', '',
@@ -107,13 +103,13 @@ class _SingleMachineState extends State<SingleMachine> {
         child: Icon(Icons.send),
         onPressed: () async {
           if (myController1.text == '') {
-            myController1.text = temp[0]['cycleTime'].toString();
+            myController1.text = temp['cycleTime'].toString();
           }
           if (myController2.text == '') {
-            myController2.text = temp[0]['status'].toString();
+            myController2.text = temp['status'].toString();
           }
           if (myController3.text == '') {
-            myController3.text = 0.toString();
+            myController3.text = '0';
           }
           Map data = {
             'machineNumber': title,
